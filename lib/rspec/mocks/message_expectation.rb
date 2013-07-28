@@ -116,6 +116,9 @@ module RSpec
         if @method_double.object.is_a?(RSpec::Mocks::TestDouble)
           @error_generator.raise_only_valid_on_a_partial_mock(:and_call_original)
         else
+          if implementation.inner_action
+            RSpec.warning("You're overriding a previous implementation for this stub")
+          end
           @implementation = AndCallOriginalImplementation.new(@method_double.original_method)
           @yield_receiver_to_implementation_block = false
         end
@@ -464,6 +467,7 @@ module RSpec
       end
 
       def inner_implementation_action=(action)
+        RSpec.warning("You're overriding a previous implementation for this stub") if implementation.inner_action
         implementation.inner_action = action if action
       end
 
@@ -557,6 +561,10 @@ module RSpec
       end
 
       def present?
+        true
+      end
+
+      def inner_action
         true
       end
 
